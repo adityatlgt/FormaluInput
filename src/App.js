@@ -40,17 +40,17 @@ function App() {
 
   function setCursorToEnd(contentEditableElement) {
     var range, selection;
-    if (document.createRange) { 
-      range = document.createRange(); 
-      range.selectNodeContents(contentEditableElement); 
-      range.collapse(false); 
-      selection = window.getSelection(); 
+    if (document.createRange) {
+      range = document.createRange();
+      range.selectNodeContents(contentEditableElement);
+      range.collapse(false);
+      selection = window.getSelection();
       selection.removeAllRanges();
-      selection.addRange(range); 
-    } else if (document.selection) { 
-      range = document.body.createTextRange(); 
+      selection.addRange(range);
+    } else if (document.selection) {
+      range = document.body.createTextRange();
       range.moveToElementText(contentEditableElement);
-      range.collapse(false); 
+      range.collapse(false);
       range.select();
     }
   }
@@ -94,33 +94,66 @@ function App() {
   }
 
   function evaluateExpression(expression) {
-    let result = parseFloat(expression[0]);
-    for (let i = 1; i < expression.length; i += 2) {
-      const operator = expression[i];
-      const operand = parseFloat(expression[i + 1]);
-      if (operator === '+') {
-        result += operand;
-      } else if (operator === '-') {
-        result -= operand;
-      } else if (operator === '*') {
-        result *= operand;
-      } else if (operator === '/') {
-        result /= operand;
+    const operators = { '+': 1, '-': 1, '*': 2, '/': 2, '^': 3 };
+    const stack = [];
+    const outputQueue = [];
+
+    for (let token of expression) {
+      if (!isNaN(parseFloat(token))) {
+        outputQueue.push(parseFloat(token));
+      } else if (token === '(') {
+        stack.push(token);
+      } else if (token === ')') {
+        while (stack.length && stack[stack.length - 1] !== '(') {
+          outputQueue.push(stack.pop());
+        }
+        stack.pop();
+      } else {
+        while (stack.length && operators[token] <= operators[stack[stack.length - 1]]) {
+          outputQueue.push(stack.pop());
+        }
+        stack.push(token);
       }
     }
-    return result;
+
+    while (stack.length) {
+      outputQueue.push(stack.pop());
+    }
+
+    const resultStack = [];
+    for (let token of outputQueue) {
+      if (!isNaN(parseFloat(token))) {
+        resultStack.push(parseFloat(token));
+      } else {
+        const operand2 = resultStack.pop();
+        const operand1 = resultStack.pop();
+        if (token === '+') {
+          resultStack.push(operand1 + operand2);
+        } else if (token === '-') {
+          resultStack.push(operand1 - operand2);
+        } else if (token === '*') {
+          resultStack.push(operand1 * operand2);
+        } else if (token === '/') {
+          resultStack.push(operand1 / operand2);
+        } else if (token === '^') {
+          resultStack.push(Math.pow(operand1, operand2));
+        }
+      }
+    }
+
+    return resultStack[0];
   }
 
   return (
     <>
-      <div style={{ marginLeft: '30%', fontSize: 18 }}>
-        <b>Formula Implementation :</b>
+      <div style={{ marginLeft : '30%',marginTop : '14%',fontSize: 20 }}>
+        <b>Formula {`( BODMAS )`} :</b>
         {calculate.map(item => <span style={{ marginLeft: 10 }}>{item}</span>)}
         = {result}
       </div>
       <div id="contentEditableDiv" onClick={toggleDropdown} tabIndex={0} contentEditable="true" onInput={handleInputChange}
         style={{
-          marginLeft: 'auto', marginTop: '20%', paddingTop: 27,
+          marginLeft: 'auto', marginTop: '2%', paddingTop: 27,
           marginRight: 'auto', width: '50%', height: 51, border: '1px solid gray', borderRadius: '10px', paddingLeft: '10px'
         }}>
         {selectedOption.map((item, index) => <><span key={index} style={{ width: 'auto', height: 10, borderRadius: 8, marginRight: 2, backgroundColor: '#c3c3c3', border: '1px solid #7d7d7d', padding: 7 }}>{item}</span>&nbsp;</>)}
