@@ -147,16 +147,16 @@ function App() {
   return (
     <>
       <div style={{ marginLeft : '30%',marginTop : '14%',fontSize: 20 }}>
-        <b>Formula {`( BODMAS )`} :</b>
+        <b style={{color : '#5e3aee'}}>Formula</b> {`( BODMAS )`} :
         {calculate.map(item => <span style={{ marginLeft: 10 }}>{item}</span>)}
-        = {result}
+        = <span style={{color : '#5e3aee'}}>{result}</span>
       </div>
       <div id="contentEditableDiv" onClick={toggleDropdown} tabIndex={0} contentEditable="true" onInput={handleInputChange}
         style={{
           marginLeft: 'auto', marginTop: '2%', paddingTop: 27,
-          marginRight: 'auto', width: '50%', height: 51, border: '1px solid gray', borderRadius: '10px', paddingLeft: '10px'
+          marginRight: 'auto', width: '50%', height: 51, border: '1px solid #5e3aee', borderRadius: '10px', paddingLeft: '10px'
         }}>
-        {selectedOption.map((item, index) => <><span key={index} style={{ width: 'auto', height: 10, borderRadius: 8, marginRight: 2, backgroundColor: '#c3c3c3', border: '1px solid #7d7d7d', padding: 7 }}>{item}</span>&nbsp;</>)}
+        {selectedOption.map((item, index) => <><span key={index} style={{ width: 'auto', color : 'white', height: 10, borderRadius: 8, marginRight: 2, backgroundColor: '#b6a7f5', border: '1px solid #d2c9f9', padding: 7 }}>{item}</span>&nbsp;</>)}
       </div>
       {isOpen && (
         <div style={{ marginLeft: '28%', marginTop: 5 }}>
